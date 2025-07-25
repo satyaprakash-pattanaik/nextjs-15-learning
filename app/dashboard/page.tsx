@@ -31,7 +31,7 @@ export default async function Dashboard() {
     );
   }
 
-  const data = await getData(user.id);
+  const data = await getData(user?.id);
 
   return (
     <div className="py-6">
