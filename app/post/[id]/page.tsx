@@ -6,51 +6,48 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 async function getData(id: string) {
-  
   const data = await prisma.blogPost.findUnique({
-    where: {
-        id: id,
-    },
-    });
-    if (!data) {
-        return notFound();
-    }
-    return data;
+    where: { id },
+  });
+  if (!data) {
+    notFound();
+  }
+  return data;
 }
 
-type params = Promise<{id: string}>;
-
-export default async function IdPage({ params }: { params: params }) {
-    const { id } = await params;
-    const data = await getData(id); 
-    return(
-        <div className="mx-auto max-w-3xl py-8 px-4">
-            <Link className={buttonVariants({variant:'secondary'})} href={"/"}>
-            back to posts
-            </Link>
-            <div className="mb-8 mt-6">
-                <h1 className="text-3xl font-bold tracking-tight mb-4">{data.title}</h1>
-                <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                        <div className="relative size-10 overflow-hidden rounded-full">
-                            <Image src={data.authorImage} alt={data.authorName} fill className="object-cover"/>
-                        </div>
-                        <p className="font-medium">{data.authorName}</p>
-                    </div>
-                    <p className="text-sm text-gray-500">{new Intl.DateTimeFormat('en-US',{
-                        year:"numeric",
-                        month:"long",
-                        day:"numeric"}).format(data.createdAt)}</p>
-                </div>
+export default async function IdPage({ params }: { params: { id: string } }) {
+  const data = await getData(params.id);
+  return (
+    <div className="mx-auto max-w-3xl py-8 px-4">
+      <Link className={buttonVariants({ variant: "secondary" })} href={"/"}>
+        back to posts
+      </Link>
+      <div className="mb-8 mt-6">
+        <h1 className="text-3xl font-bold tracking-tight mb-4">{data.title}</h1>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="relative size-10 overflow-hidden rounded-full">
+              <Image src={data.authorImage} alt={data.authorName} fill className="object-cover" />
             </div>
-            <div className="relative h-[400] w-full mb-8 overflow-hidden rounded-lg">
-                <Image src={data.imageUrl} alt={data.title} fill className="object-cover" priority/>
-            </div>
-            <Card>
-                <CardContent>
-                    <p className="text-gray-700">{data.content}</p>
-                </CardContent>
-            </Card>
+            <p className="font-medium">{data.authorName}</p>
+          </div>
+          <p className="text-sm text-gray-500">
+            {new Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }).format(data.createdAt)}
+          </p>
         </div>
-    );
+      </div>
+      <div className="relative h-[400px] w-full mb-8 overflow-hidden rounded-lg">
+        <Image src={data.imageUrl} alt={data.title} fill className="object-cover" priority />
+      </div>
+      <Card>
+        <CardContent>
+          <p className="text-gray-700">{data.content}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
